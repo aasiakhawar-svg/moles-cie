@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The Mole | Interactive Chemistry Teaching Board</title>
+<style>
+:root{--bg:#f4f7ff;--paper:#fff;--ink:#18233d;--muted:#596782;--purple:#6741d9;--teal:#008f95;--orange:#ed8a22;--pink:#d94f91;--green:#238b57;--line:#dce3f1;--soft:#eef0ff;--shadow:0 12px 32px #26375b14}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "Segoe UI",Arial,sans-serif}
+header{background:linear-gradient(120deg,#4226a8,#7352df 55%,#e45a9c);color:white;padding:30px 22px 26px;text-align:center;position:relative;overflow:hidden}
+header:after{content:"";position:absolute;width:260px;height:260px;border:1px solid #ffffff35;border-radius:50%;right:-65px;top:-130px;box-shadow:0 0 0 25px #ffffff0d,0 0 0 55px #ffffff0a}
+header h1{font-size:clamp(2rem,5vw,3.2rem);margin:5px 0}header p{margin:4px auto;max-width:700px}.eyebrow{letter-spacing:.16em;text-transform:uppercase;font-size:.78rem;font-weight:700;opacity:.9}
+.chips{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:15px}.chips span{background:#ffffff25;border:1px solid #ffffff50;border-radius:99px;padding:5px 12px;font-size:.85rem}
+.toolbar{position:sticky;top:0;z-index:20;background:#ffffffed;backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding:9px max(14px,calc((100vw - 1150px)/2));display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+nav{display:flex;gap:6px;overflow-x:auto;flex:1}nav a{white-space:nowrap;text-decoration:none;color:var(--ink);font-size:.86rem;padding:7px 11px;border-radius:99px;background:#f0edff;font-weight:650}nav a:hover{background:#ded6ff}
+button,select,input{font:inherit}button{cursor:pointer;border:0;border-radius:11px;padding:9px 13px;background:var(--purple);color:white;font-weight:700}button.secondary{background:#e9edfa;color:var(--ink)}button.teal{background:var(--teal)}button.orange{background:var(--orange)}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #f0a83c;outline-offset:2px}
+main{max-width:1150px;margin:auto;padding:22px 18px 60px}.intro{display:grid;grid-template-columns:1.1fr .9fr;gap:18px}.panel,.lesson{background:var(--paper);border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:var(--shadow);margin:16px 0}.panel h2,.lesson h2{margin:0 0 10px;font-size:1.45rem}.lesson{scroll-margin-top:85px;border-top:6px solid var(--purple)}.lesson:nth-of-type(3n){border-top-color:var(--teal)}.lesson:nth-of-type(3n+1){border-top-color:var(--orange)}
+.kicker{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--purple);font-weight:800}.formula{background:#f0edff;border-left:5px solid var(--purple);padding:13px 16px;border-radius:12px;font-size:1.12rem;font-weight:750;margin:12px 0;overflow-x:auto}.tip{background:#e9f8f5;border-left:5px solid var(--teal);padding:12px 15px;border-radius:12px;margin:12px 0}.warn{background:#fff2e3;border-left:5px solid var(--orange);padding:12px 15px;border-radius:12px;margin:12px 0}.pink{background:#fff0f7;border-left:5px solid var(--pink);padding:12px 15px;border-radius:12px;margin:12px 0}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.visual{background:linear-gradient(145deg,#f5f3ff,#eefafa);border-radius:16px;padding:12px;min-height:160px;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center}
+.visual svg{width:min(100%,330px);height:auto}.flow{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin:15px 0}.step{padding:12px 16px;border-radius:13px;color:white;font-weight:800;min-width:120px;text-align:center}.purple{background:var(--purple)}.tealbg{background:var(--teal)}.orangebg{background:var(--orange)}.pinkbg{background:var(--pink)}.greenbg{background:var(--green)}.arrow{font-size:1.5rem;color:var(--muted)}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.94rem}th{background:#eae5ff;color:#30205f;text-align:left}td,th{padding:10px;border:1px solid var(--line)}tr:nth-child(even) td{background:#fafbff}
+details{border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin:9px 0;background:#fbfcff}summary{font-weight:750;cursor:pointer;color:var(--teal)}
+.calc{background:#f7f9ff;border:1px solid var(--line);border-radius:16px;padding:16px}.calc label{display:block;font-size:.9rem;font-weight:700;margin:9px 0 4px}.calc input,.calc select{width:100%;padding:10px;border:1px solid #c8d2e6;border-radius:9px;background:white;color:#18233d}.result{background:#e6f7f2;border-radius:10px;padding:12px;margin-top:12px;font-weight:800;min-height:48px}
+.particle-stage{height:170px;width:100%;position:relative;overflow:hidden;background:#171f43;border-radius:15px;margin:12px 0}
+.particle{position:absolute;width:12px;height:12px;border-radius:50%;background:#6ee7d8;box-shadow:0 0 12px #6ee7d8;animation:drift 4s ease-in-out infinite alternate}
+.particle:nth-child(3n){background:#ffc36e;box-shadow:0 0 12px #ffc36e;animation-duration:3s}.particle:nth-child(4n){background:#e9a1ff;animation-duration:5s}
+@keyframes drift{0%{transform:translate(0,0)}25%{transform:translate(18px,-16px)}50%{transform:translate(-13px,15px)}75%{transform:translate(20px,12px)}100%{transform:translate(-8px,-12px)}}
+.bubble{animation:bob 2.6s ease-in-out infinite}@keyframes bob{50%{transform:translateY(-9px)}}
+.pulse{animation:pulse 2s infinite}@keyframes pulse{50%{opacity:.45;transform:scale(.92)}}
+.quiz-q{padding:13px;border:1px solid var(--line);border-radius:13px;margin:10px 0}.quiz-q p{font-weight:750;margin:0 0 8px}.quiz-q label{display:block;padding:5px}.feedback{font-weight:750;margin-top:6px;min-height:24px}
+footer{text-align:center;color:var(--muted);padding:25px}
+@media(max-width:760px){.intro,.grid2,.grid3{grid-template-columns:1fr}.toolbar{position:static}main{padding:14px}.panel,.lesson{padding:16px}.step{min-width:100px}}
+body.dark{--bg:#11182b;--paper:#1b2540;--ink:#edf2ff;--muted:#b4bfd6;--line:#34415e;--soft:#2b3158}body.dark .toolbar{background:#17213bea}body.dark nav a{background:#30345c;color:#f1efff}body.dark .formula{background:#302b58;color:#fff}body.dark .tip{background:#163e40}body.dark .warn{background:#49341e}body.dark .pink{background:#482840}body.dark .visual{background:#222d4a}body.dark tr:nth-child(even) td{background:#202b47}body.dark th{background:#38315f;color:white}body.dark details,.dark .calc{background:#202b47}body.dark .calc input,body.dark .calc select{background:#111a2d;color:white;border-color:#52617f}
+</style></head>
+<body>
+<header>
+ <div class="eyebrow">CIE O Level Chemistry · 5070</div>
+ <h1>⚗️ Chapter 9: The Mole</h1>
+ <p>A visual, interactive teaching board — understand the idea, explore the models, then practise the calculations.</p>
+ <div class="chips"><span>Ar &amp; Mr</span><span>The mole</span><span>Molar mass</span><span>Formulae</span><span>Gas volume</span></div>
+ <p style="margin-top:14px;font-weight:700">Prepared by Aasia Khawar</p>
+</header>
+<div class="toolbar"><nav>
+<a href="#bigidea">Big idea</a><a href="#ar">Ar</a><a href="#mr">Mr</a><a href="#mole">Mole</a><a href="#mass">Mass</a><a href="#percent">%</a><a href="#formulae">Formulae</a><a href="#gas">Gas volume</a><a href="#practice">Quiz</a>
+</nav><button class="secondary" onclick="document.body.classList.toggle('dark')">☾ Theme</button><button class="secondary" onclick="window.print()">Print</button></div>
+<main>
+<div class="intro">
+ <div class="panel" id="bigidea"><div class="kicker">Start here · The big idea</div><h2>Why do chemists use the mole?</h2>
+ <p>Counting rice grains in a bucket is difficult. Atoms and molecules are unimaginably smaller! Chemists therefore <b>weigh</b> substances and use the mole as a counting unit.</p>
+ <div class="flow"><div class="step purple">Mass (g)</div><span class="arrow">⇄</span><div class="step tealbg">MOLES</div><span class="arrow">⇄</span><div class="step orangebg">Particles</div><span class="arrow">⇄</span><div class="step pinkbg">Gas volume</div></div>
+ <div class="tip"><b>Think of it as a bridge:</b> calculate moles first, then convert to the quantity the question asks for.</div></div>
+ <div class="panel"><div class="kicker">Visual model</div><h2>A mole is a huge counting number</h2>
+ <div class="particle-stage" aria-label="Animated particles"><i class="particle" style="left:8%;top:20%"></i><i class="particle" style="left:22%;top:65%"></i><i class="particle" style="left:37%;top:35%"></i><i class="particle" style="left:50%;top:70%"></i><i class="particle" style="left:66%;top:18%"></i><i class="particle" style="left:80%;top:55%"></i><i class="particle" style="left:92%;top:30%"></i><i class="particle" style="left:15%;top:80%"></i><i class="particle" style="left:58%;top:45%"></i><i class="particle" style="left:75%;top:82%"></i><i class="particle" style="left:42%;top:12%"></i><i class="particle" style="left:29%;top:45%"></i></div>
+ <div class="formula" style="text-align:center">1 mol = 6 × 10<sup>23</sup> particles</div><p style="text-align:center;margin:0">Particles can mean atoms, molecules, ions or formula units — read the question carefully.</p></div>
+</div>
+
+<section class="lesson" id="ar"><div class="kicker">9.1 · Relative atomic mass</div><h2>⚖️ Relative Atomic Mass (A<sub>r</sub>)</h2>
+<p>Atoms are too light to compare using everyday masses. Their masses are compared with carbon-12, which is assigned a value of exactly 12.</p>
+<div class="formula">A<sub>r</sub> = mass of one atom ÷ (1/12 × mass of one carbon-12 atom)</div>
+<div class="grid2"><div class="visual"><svg viewBox="0 0 300 145" role="img" aria-label="Carbon twelve reference atom"><circle cx="78" cy="70" r="42" fill="#8b73ed" opacity=".18"/><circle cx="78" cy="70" r="25" fill="#7352df"/><circle cx="62" cy="58" r="7" fill="#ffc36e"/><circle cx="91" cy="58" r="7" fill="#ffc36e"/><circle cx="65" cy="83" r="7" fill="#6ee7d8"/><circle cx="92" cy="83" r="7" fill="#6ee7d8"/><text x="145" y="60" font-size="18" fill="currentColor" font-weight="bold">Carbon-12</text><text x="145" y="88" font-size="24" fill="#7352df" font-weight="bold">Aᵣ = 12</text></svg><b>Reference standard</b></div><div><div class="tip"><b>Remember</b><br>A<sub>r</sub> is a ratio, so it has <u>no unit</u>.</div><p>Examples from the notes:</p><p><b>H = 1 · C = 12 · O = 16 · Cl = 35.5</b></p></div></div>
+<h3>Why is chlorine A<sub>r</sub> = 35.5?</h3><p>Chlorine has isotopes. Its relative atomic mass is a weighted average.</p>
+<div class="formula">A<sub>r</sub> = (75/100 × 35) + (25/100 × 37) = 35.5</div>
+</section>
+
+<section class="lesson" id="mr"><div class="kicker">9.2 · Add up the atoms</div><h2>🧮 Relative Molecular / Formula Mass (M<sub>r</sub>)</h2>
+<div class="formula">M<sub>r</sub> = sum of the A<sub>r</sub> values of all atoms in the formula</div>
+<table><tr><th>Substance</th><th>Formula</th><th>Working</th><th>M<sub>r</sub></th></tr>
+<tr><td>Nitrogen</td><td>N<sub>2</sub></td><td>2 × 14</td><td>28</td></tr><tr><td>Ammonia</td><td>NH<sub>3</sub></td><td>14 + 3 × 1</td><td>17</td></tr><tr><td>Carbon dioxide</td><td>CO<sub>2</sub></td><td>12 + 2 × 16</td><td>44</td></tr><tr><td>Water</td><td>H<sub>2</sub>O</td><td>2 × 1 + 16</td><td>18</td></tr><tr><td>Ethanol</td><td>C<sub>2</sub>H<sub>5</sub>OH</td><td>24 + 6 + 16</td><td>46</td></tr><tr><td>Calcium nitrate</td><td>Ca(NO<sub>3</sub>)<sub>2</sub></td><td>40 + 2 × 14 + 6 × 16</td><td>164</td></tr><tr><td>Hydrated copper(II) sulfate</td><td>CuSO<sub>4</sub>·5H<sub>2</sub>O</td><td>64 + 32 + 64 + 5 × 18</td><td>250</td></tr></table>
+<div class="grid2"><div class="tip"><b>Bracket rule</b><br>In Ca(NO<sub>3</sub>)<sub>2</sub>, the 2 outside multiplies everything inside: 2 N and 6 O.</div><div class="warn"><b>Watch out</b><br>Covalent substances have relative molecular mass; ionic compounds have relative formula mass. Both use M<sub>r</sub>. In CuSO<sub>4</sub>·5H<sub>2</sub>O, add 5 × 18 for the water.</div></div>
+</section>
+
+<section class="lesson" id="mole"><div class="kicker">9.3 · Count particles</div><h2>🔢 The Mole &amp; Avogadro Constant</h2>
+<div class="tip"><b>Definition:</b> One mole contains the same number of particles as there are atoms in 12 g of carbon-12. This number is 6 × 10<sup>23</sup>, the Avogadro constant. Unit: mol.</div>
+<div class="formula">Moles = number of particles ÷ (6 × 10<sup>23</sup>)<br>Particles = moles × (6 × 10<sup>23</sup>)</div>
+<div class="grid3"><div class="visual"><b>Example 1</b><p>1 × 10<sup>23</sup> neon atoms</p><strong>÷ 6 × 10<sup>23</sup></strong><h2 style="color:#6741d9">0.167 mol</h2></div><div class="visual"><b>Example 2</b><p>0.5 mol iron atoms</p><strong>× 6 × 10<sup>23</sup></strong><h2 style="color:#008f95">3 × 10<sup>23</sup></h2></div><div class="visual"><b>Example 3</b><p>3 mol H<sub>2</sub> molecules</p><strong>× 2 atoms per molecule</strong><h2 style="color:#d94f91">6 mol H atoms</h2></div></div>
+<div class="warn"><b>Quick check:</b> 0.5 mol O<sub>2</sub> molecules and 0.5 mol Fe atoms contain the same number of particles. But identify what the particles are: atoms, molecules or ions.</div>
+<h3>Mole ratios in equations</h3><div class="flow"><div class="step purple">2Na</div><span class="arrow">+</span><div class="step tealbg">Cl<sub>2</sub></div><span class="arrow">→</span><div class="step orangebg">2NaCl</div></div><p style="text-align:center;font-weight:700">2 mol Na + 1 mol Cl<sub>2</sub> → 2 mol NaCl</p><p style="text-align:center">The balanced equation coefficients give the mole ratio.</p>
+</section>
+
+<section class="lesson" id="mass"><div class="kicker">9.4 · Mass ↔ moles</div><h2>⚖️ Moles and Molar Mass</h2>
+<p><b>Molar mass</b> is the mass of one mole. It has the same numerical value as A<sub>r</sub> or M<sub>r</sub>, expressed in g/mol.</p>
+<div class="grid2"><div class="visual"><svg viewBox="0 0 300 190" role="img" aria-label="Mole triangle"><path d="M150 18 L25 166 L275 166 Z" fill="#e8e2ff" stroke="#6741d9" stroke-width="4"/><path d="M88 91 H212 M150 91 V166" stroke="#6741d9" stroke-width="3"/><text x="150" y="76" text-anchor="middle" font-size="19" font-weight="bold" fill="#4226a8">MASS</text><text x="86" y="132" text-anchor="middle" font-size="16" font-weight="bold" fill="#008f95">MOLES</text><text x="215" y="132" text-anchor="middle" font-size="16" font-weight="bold" fill="#d87918">Mᵣ</text></svg><b>Use the triangle to choose the operation</b></div><div><div class="formula">Moles = mass (g) ÷ A<sub>r</sub> or M<sub>r</sub></div><div class="formula">Mass (g) = moles × M<sub>r</sub></div><div class="tip">Convert kg to g before using the formula. Example: 0.196 kg = 196 g; 196 ÷ 56 = 3.5 mol Fe.</div></div></div>
+<div class="calc"><h3>Try the mass–mole calculator</h3><label for="calcMode">What do you want to calculate?</label><select id="calcMode" onchange="updateCalc()"><option value="moles">Moles from mass</option><option value="mass">Mass from moles</option></select><div class="grid2"><div><label id="firstLabel" for="firstVal">Mass (g)</label><input id="firstVal" type="number" min="0" step="any" value="68.4" oninput="updateCalc()"></div><div><label id="secondLabel" for="secondVal">Mᵣ / Aᵣ</label><input id="secondVal" type="number" min="0" step="any" value="114" oninput="updateCalc()"></div></div><div class="result" id="calcResult" aria-live="polite">68.4 ÷ 114 = 0.6 mol</div></div>
+</section>
+
+<section class="lesson" id="percent"><div class="kicker">9.5 · Percentage composition</div><h2>🥧 Percentage by Mass</h2>
+<div class="formula">% of element = (A<sub>r</sub> × number of atoms) ÷ M<sub>r</sub> × 100%</div>
+<div class="grid2"><div class="visual"><svg viewBox="0 0 300 175" role="img" aria-label="Composition of hydrogen peroxide"><circle cx="105" cy="85" r="58" fill="none" stroke="#d94f91" stroke-width="24" stroke-dasharray="21.5 343" transform="rotate(-90 105 85)"/><circle cx="105" cy="85" r="58" fill="none" stroke="#008f95" stroke-width="24" stroke-dasharray="343 21.5" stroke-dashoffset="-21.5" transform="rotate(-90 105 85)"/><text x="105" y="82" text-anchor="middle" font-size="18" font-weight="bold" fill="currentColor">H₂O₂</text><text x="105" y="104" text-anchor="middle" font-size="13" fill="currentColor">Mᵣ = 34</text><text x="190" y="64" font-size="14" fill="#d94f91" font-weight="bold">H = 5.9%</text><text x="190" y="91" font-size="14" fill="#008f95" font-weight="bold">O = 94.1%</text></svg><b>Hydrogen peroxide</b></div><div><p>For H<sub>2</sub>O<sub>2</sub> (M<sub>r</sub> = 34):</p><p>H: (2 ÷ 34) × 100 = <b>5.9%</b></p><p>O: (32 ÷ 34) × 100 = <b>94.1%</b></p><div class="tip">Check: percentages of all elements should add to 100% (allowing for rounding).</div></div></div>
+<p><b>Water in CuSO<sub>4</sub>·5H<sub>2</sub>O:</b> (5 × 18) ÷ 250 × 100 = <b>36%</b>.</p>
+</section>
+
+<section class="lesson" id="formulae"><div class="kicker">9.6 · Formulae from composition</div><h2>🔬 Empirical and Molecular Formulae</h2>
+<div class="grid2"><div class="visual"><svg viewBox="0 0 300 145" role="img" aria-label="Molecular formula particle illustration"><g class="bubble"><circle cx="100" cy="70" r="25" fill="#6741d9"/><circle cx="62" cy="40" r="15" fill="#ed8a22"/><circle cx="138" cy="40" r="15" fill="#ed8a22"/><circle cx="62" cy="100" r="15" fill="#ed8a22"/><circle cx="138" cy="100" r="15" fill="#ed8a22"/><path d="M78 52 L89 61 M122 52 L111 61 M78 88 L89 79 M122 88 L111 79" stroke="#65718b" stroke-width="5"/></g><text x="185" y="62" font-size="17" font-weight="bold" fill="currentColor">Molecule</text><text x="185" y="87" font-size="13" fill="currentColor">exact atom count</text></svg><b>Empirical formula</b><p>Simplest whole-number ratio of atoms.</p></div><div class="visual"><div style="font-size:2.8rem">🧩</div><b>Molecular formula</b><p>Actual number of each atom in one molecule.</p></div></div>
+<h3>The 5-step empirical formula ladder</h3><div class="flow"><div class="step purple">1. Masses<br>(or % as grams)</div><span class="arrow">→</span><div class="step tealbg">2. Divide by A<sub>r</sub></div><span class="arrow">→</span><div class="step orangebg">3. Divide by smallest</div><span class="arrow">→</span><div class="step pinkbg">4. Whole numbers</div><span class="arrow">→</span><div class="step greenbg">5. Write formula</div></div>
+<div class="tip"><b>Worked example: magnesium oxide</b><br>Mg = 1.20 g; O = 0.80 g. Moles: Mg = 1.20 ÷ 24 = 0.05; O = 0.80 ÷ 16 = 0.05. Ratio 1 : 1 → <b>MgO</b>.</div>
+<div class="warn"><b>Exam reminders</b><ul><li>Use A<sub>r</sub>, not M<sub>r</sub>, when finding an empirical formula.</li><li>Mass of oxygen in an oxide can be found by subtraction: mass of oxide − mass of metal.</li><li>Do not round 2.6 to 3. Use a multiplier to reach whole numbers.</li></ul></div>
+<h3>Empirical formula → molecular formula</h3><div class="formula">n = M<sub>r</sub> given ÷ M<sub>r</sub> of empirical formula</div>
+<p>Example: CH<sub>2</sub>O has M<sub>r</sub> = 30. If the compound M<sub>r</sub> is 180, n = 180 ÷ 30 = 6, so molecular formula = <b>C<sub>6</sub>H<sub>12</sub>O<sub>6</sub></b>.</p>
+<div class="tip"><b>Fraction multipliers:</b> 0.5 → ×2 · 0.33 or 0.67 → ×3 · 0.25 or 0.75 → ×4 · 0.2 → ×5.</div>
+</section>
+
+<section class="lesson" id="gas"><div class="kicker">9.7 · Gases at r.t.p.</div><h2>🎈 Molar Gas Volume</h2>
+<div class="tip"><b>Avogadro’s Law:</b> Equal volumes of all gases at the same temperature and pressure contain the same number of molecules.</div>
+<div class="grid2"><div class="visual"><svg viewBox="0 0 300 190" role="img" aria-label="Animated gas balloon"><g class="bubble"><path d="M150 18 C65 18 73 120 150 145 C227 120 235 18 150 18Z" fill="#8b73ed" opacity=".8"/><path d="M150 145 L142 158 L158 158Z" fill="#7352df"/><path d="M150 158 Q130 170 151 185" fill="none" stroke="#7352df" stroke-width="3"/><g fill="#fff"><circle cx="120" cy="65" r="5"/><circle cx="165" cy="48" r="5"/><circle cx="185" cy="90" r="5"/><circle cx="130" cy="105" r="5"/><circle cx="158" cy="120" r="5"/></g></g><text x="150" y="92" text-anchor="middle" font-size="18" fill="white" font-weight="bold">GAS</text></svg><b>One mole fills 24 dm³ at r.t.p.</b></div><div><div class="formula">1 mol gas = 24 dm³ = 24 000 cm³</div><div class="formula">Moles = volume (dm³) ÷ 24<br>Moles = volume (cm³) ÷ 24 000</div><div class="formula">Volume (dm³) = moles × 24</div></div></div>
+<div class="calc"><h3>Gas volume converter</h3><div class="grid2"><div><label for="gasVol">Gas volume</label><input id="gasVol" type="number" value="6000" min="0" oninput="gasCalc()"></div><div><label for="gasUnit">Unit</label><select id="gasUnit" onchange="gasCalc()"><option value="cm">cm³</option><option value="dm">dm³</option></select></div></div><div class="result" id="gasResult" aria-live="polite">6000 cm³ ÷ 24000 = 0.25 mol</div></div>
+<p><b>Example:</b> 8 g O<sub>2</sub>. M<sub>r</sub> = 32; moles = 8 ÷ 32 = 0.25 mol; volume = 0.25 × 24 = <b>6 dm³</b>.</p>
+<div class="warn"><b>Unit alert:</b> Use 24 dm³ with dm³, or 24 000 cm³ with cm³. Never mix the units.</div>
+</section>
+
+<section class="lesson" id="practice"><div class="kicker">Check your understanding</div><h2>🏆 Quick Interactive Quiz</h2><p>Choose an answer, then press <b>Check answers</b>. Use the feedback to discuss misconceptions.</p>
+<div class="quiz-q" data-answer="b"><p>1. What is the number of particles in one mole?</p><label><input type="radio" name="q1" value="a"> 6 × 10<sup> เห</sup>20</label><label><input type="radio" name="q1" value="b"> 6 × 10<sup>23</sup></label><label><input type="radio" name="q1" value="c"> 24 000</label><div class="feedback"></div></div>
+<div class="quiz-q" data-answer="c"><p>2. How many moles are in 36 g of carbon? (A<sub>r</sub> C = 12)</p><label><input type="radio" name="q2" value="a"> 0.33 mol</label><label><input type="radio" name="q2" value="b"> 2 mol</label><label><input type="radio" name="q2" value="c"> 3 mol</label><div class="feedback"></div></div>
+<div class="quiz-q" data-answer="a"><p>3. At r.t.p., what volume does 0.5 mol of gas occupy?</p><label><input type="radio" name="q3" value="a"> 12 dm³</label><label><input type="radio" name="q3" value="b"> 24 dm³</label><label><input type="radio" name="q3" value="c"> 48 dm³</label><div class="feedback"></div></div>
+<div class="quiz-q" data-answer="b"><p>4. What is the empirical formula of a compound with a 1:1 mole ratio of Mg:O?</p><label><input type="radio" name="q4" value="a"> Mg₂O</label><label><input type="radio" name="q4" value="b"> MgO</label><label><input type="radio" name="q4" value="c"> MgO₂</label><div class="feedback"></div></div>
+<button onclick="checkQuiz()">Check answers</button> <button class="secondary" onclick="resetQuiz()">Try again</button><div class="result" id="score" aria-live="polite">Your score will appear here.</div>
+<h3>Tap to reveal worked examples</h3>
+<details><summary>Calculate Mᵣ of Ca(OH)₂</summary>40 + 2(16 + 1) = <b>74</b>.</details>
+<details><summary>How many moles are in 254 g of I₂? (Aᵣ I = 127)</summary>Mᵣ(I₂) = 254. Moles = 254 ÷ 254 = <b>1 mol of I₂ molecules</b>. This is 2 mol of iodine atoms.</details>
+<details><summary>Find the empirical formula: Mg 1.20 g and O 0.80 g</summary>Mg: 1.20 ÷ 24 = 0.05 mol. O: 0.80 ÷ 16 = 0.05 mol. Ratio 1:1 → <b>MgO</b>.</details>
+<details><summary>Find moles in 120 cm³ CO₂ at r.t.p.</summary>120 ÷ 24 000 = <b>0.005 mol</b>.</details>
+</section>
+<section class="lesson"><h2>🗝️ Master Cheat Sheet</h2><table><tr><th>To find</th><th>Use</th></tr><tr><td>Moles from mass</td><td>mass ÷ A<sub>r</sub> or M<sub>r</sub></td></tr><tr><td>Moles from particles</td><td>particles ÷ 6 × 10<sup>23</sup></td></tr><tr><td>Moles of gas at r.t.p.</td><td>dm³ ÷ 24 or cm³ ÷ 24 000</td></tr><tr><td>Percentage by mass</td><td>(A<sub>r</sub> × number of atoms) ÷ M<sub>r</sub> × 100</td></tr><tr><td>Molecular formula</td><td>n = given M<sub>r</sub> ÷ empirical formula M<sub>r</sub></td></tr></table>
+<div class="pink"><b>Common exam mistakes</b><br>Forgetting kg → g · confusing atoms and molecules · using 24 dm³ with cm³ · forgetting the number outside brackets · rounding too early.</div>
+</section>
+<footer>🌈 The mole is a bridge: find the moles, then go anywhere!<br><b>Aasia Khawar · CIE O Level Chemistry 5070</b></footer>
+</main>
+<script>
+function updateCalc(){const mode=document.getElementById('calcMode').value,a=Number(document.getElementById('firstVal').value),b=Number(document.getElementById('secondVal').value),out=document.getElementById('calcResult');document.getElementById('firstLabel').textContent=mode==='moles'?'Mass (g)':'Moles (mol)';document.getElementById('secondLabel').textContent=mode==='moles'?'Aᵣ / Mᵣ':'Aᵣ / Mᵣ (g mol⁻¹)';if(!Number.isFinite(a)||!Number.isFinite(b)||b<=0||a<0){out.textContent='Enter valid positive values.';return}out.textContent=mode==='moles'?`${a} ÷ ${b} = ${(a/b).toPrecision(5)} mol`:`${a} × ${b} = ${(a*b).toPrecision(6)} g`}
+function gasCalc(){const v=Number(document.getElementById('gasVol').value),u=document.getElementById('gasUnit').value,o=document.getElementById('gasResult');if(!Number.isFinite(v)||v<0){o.textContent='Enter a valid volume.';return}const n=v/(u==='cm'?24000:24);o.textContent=`${v} ${u==='cm'?'cm³':'dm³'} ÷ ${u==='cm'?'24000':'24'} = ${n.toPrecision(5)} mol`}
+function checkQuiz(){let score=0;document.querySelectorAll('.quiz-q').forEach((q,i)=>{const chosen=q.querySelector('input:checked'),f=q.querySelector('.feedback');if(chosen&&chosen.value===q.dataset.answer){score++;f.textContent='✓ Correct — well done!';f.style.color='#238b57'}else{f.textContent='Not quite. Review the worked notes and try again.';f.style.color='#c05b25'}});document.getElementById('score').textContent=`You scored ${score} out of 4.`}
+function resetQuiz(){document.querySelectorAll('.quiz-q input').forEach(x=>x.checked=false);document.querySelectorAll('.feedback').forEach(x=>x.textContent='');document.getElementById('score').textContent='Your score will appear here.'}
+updateCalc();gasCalc();
+</script></body></html>
